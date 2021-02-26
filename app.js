@@ -58,11 +58,10 @@ document.getElementById('book-form').addEventListener('submit', function(e){
     ui.showAlert('Please fill in all fields', 'error');
   }else{
     ui.addBookToList(book);
+    
+    ui.showAlert('Book added!', 'success');
+    //Clear fields
+    ui.clearFields();
   }
-
-  ui.addBookToList(book);
-  ui.showAlert('Book added!', 'success');
-  //Clear fields
-  ui.clearFields();
   e.preventDefault();
 })
