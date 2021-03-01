@@ -46,6 +46,56 @@ class UI {
   }
 }
 
+//Local Storage Class
+class Store {
+  static getBook(){
+    let books;
+    if(localStorage.getItem('books') === null) {
+      books = [];
+    } else {
+      books = JSON.parse(localStorage.getItem('books'));
+    }
+    return books;
+  }
+
+  static displayBook() {
+    const books = Store.getBook();
+
+    books.forEach(function(book){
+      const ui = new UI;
+
+      //add book to UI
+      ui.addBookToList(book);
+    });
+      
+  }
+  
+
+  static addBook(book) {
+    const books = Store.getBook();
+
+    books.push(book);
+
+    localStorage.setItem('books', JSON.stringify(books));
+  }
+
+  static removeBook(isbn) {
+    const books = Store.getBook();
+
+    books.forEach(function(book, index){
+      if(book.isbn === isbn){
+        books.splice(index, 1);
+      }
+    });
+    
+    localStorage.setItem('books', JSON.stringify(books));
+  }
+}
+
+
+//Dom load event
+document.addEventListener('DOMContentLoaded', Store.displayBook);
+
 document.getElementById('book-form').addEventListener('submit', function(e){
   const title = document.getElementById('title').value,
         author = document.getElementById('author').value,
@@ -61,11 +111,14 @@ document.getElementById('book-form').addEventListener('submit', function(e){
     ui.showAlert('Please fill in all fields', 'error');
   }else{
     ui.addBookToList(book);
+
+    //Add to LS
+    Store.addBook(book);
     
     ui.showAlert('Book added!', 'success');
     //Clear fields
     ui.clearFields();
-
+    console.log(ui);
     
   }
   e.preventDefault();
@@ -75,6 +128,10 @@ document.getElementById('book-form').addEventListener('submit', function(e){
 document.getElementById('book-list').addEventListener('click', function(e){
   const ui = new UI();
   ui.deleteBook(e.target);
+
+  //Remove from LS
+  Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
+
   ui.showAlert('Item deleted.', 'success');
   e.preventDefault();
 })
